@@ -197,6 +197,9 @@ namespace AmandsSense.Components
 
             foreach (SenseDeadPlayer deadPlayer in DeadPlayers)
             {
+                // Bodies can be destroyed mid-raid (bot despawn on a Fika host, corpse cleanup mods)
+                if (deadPlayer.victim == null) continue;
+
                 if (Vector3.Distance(Player.Position, deadPlayer.victim.Position) < Settings.DeadPlayerRadius.Value)
                 {
                     if (!SenseWorlds.ContainsKey(deadPlayer.victim.GetInstanceID()))

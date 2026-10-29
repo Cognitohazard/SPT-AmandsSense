@@ -2,6 +2,7 @@
 using AmandsSense.Helpers;
 using EFT;
 using EFT.Interactive;
+using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
@@ -32,13 +33,21 @@ namespace AmandsSense.Components
         private GameObject amandsSenseConstructorGameObject;
         private AmandsSenseConstructor amandsSenseConstructor;
 
+        private Action unsubscribeNVGChanged;
+
         public void Start()
         {
-            DisableGlow = AmandsSenseHelper.IsNightVisionActive(AmandsSenseClass.Player);
-            AmandsSenseClass.Player.NightVisionObserver.Changed.Subscribe(NVGChanged);
+            // Bind subscribes and calls NVGChanged once, which sets DisableGlow
+            unsubscribeNVGChanged = AmandsSenseClass.Player.NightVisionObserver.Changed.Bind(NVGChanged);
 
             enabled = false;
             WaitAndStart();
+        }
+
+        public void OnDestroy()
+        {
+            // Every scan creates new markers, so without this each one stays subscribed for the rest of the raid
+            if (unsubscribeNVGChanged != null) unsubscribeNVGChanged();
         }
 
         private async void WaitAndStart()

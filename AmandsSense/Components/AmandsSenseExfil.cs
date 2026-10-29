@@ -1,6 +1,7 @@
 ﻿using AmandsSense.Helpers;
 using EFT;
 using EFT.Interactive;
+using System;
 using System.Linq;
 using TMPro;
 using UnityEngine;
@@ -37,10 +38,17 @@ namespace AmandsSense.Components
 
         public float Intensity = 0f;
 
+        private Action unsubscribeNVGChanged;
+
         public void Start()
         {
-            disableGlow = AmandsSenseHelper.IsNightVisionActive(AmandsSenseClass.Player);
-            AmandsSenseClass.Player.NightVisionObserver.Changed.Subscribe(NVGChanged);
+            // Bind subscribes and calls NVGChanged once, which sets disableGlow
+            unsubscribeNVGChanged = AmandsSenseClass.Player.NightVisionObserver.Changed.Bind(NVGChanged);
+        }
+
+        public void OnDestroy()
+        {
+            if (unsubscribeNVGChanged != null) unsubscribeNVGChanged();
         }
 
         public void SetSense(ExfiltrationPoint ExfiltrationPoint)

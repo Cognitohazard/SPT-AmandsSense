@@ -8,6 +8,8 @@ using AmandsSense.Patches;
 namespace AmandsSense
 {
     [BepInPlugin("xyz.drakia.Sense", "Sense", "3.1.0")]
+    // A Fika headless has no camera or human player to show markers to
+    [BepInIncompatibility("com.fika.headless")]
     public class AmandsSensePlugin : BaseUnityPlugin
     {
         public static string PluginFolder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
